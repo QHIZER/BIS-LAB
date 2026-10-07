@@ -56,3 +56,26 @@ for generation in range(3):
 
 print("\nFinal Best Route:", best)
 print("Final Fitness:", fitness(best))
+
+out put 
+
+Initial Population:
+['A', 'E', 'B', 'C', 'D'] Fitness = 16.97
+['B', 'E', 'C', 'D', 'A'] Fitness = 21.5
+['D', 'E', 'A', 'B', 'C'] Fitness = 18.39
+['D', 'C', 'A', 'E', 'B'] Fitness = 18.47
+
+Generation 1
+Best Route: ['A', 'E', 'B', 'C', 'D']
+Best Fitness: 16.97
+
+Generation 2
+Best Route: ['A', 'E', 'B', 'C', 'D']
+Best Fitness: 16.97
+
+Generation 3
+Best Route: ['A', 'E', 'B', 'C', 'D']
+Best Fitness: 16.97
+
+Final Best Route: ['A', 'E', 'B', 'C', 'D']
+Final Fitness: 16.97
