@@ -1,0 +1,58 @@
+import random
+import math
+
+cities = {
+    'A': (0, 0),
+    'B': (2, 3),
+    'C': (5, 1),
+    'D': (6, 5),
+    'E': (1, 6)
+}
+
+# Calculate distance between two cities
+def distance(a, b):
+    x1, y1 = cities[a]
+    x2, y2 = cities[b]
+    return math.sqrt((x2-x1)**2 + (y2-y1)**2)
+
+# Calculate total route distance
+def fitness(route):
+    total = 0
+    for i in range(4):
+        total += distance(route[i], route[i+1])
+    return round(total, 2)
+
+# Initial population: 4 routes
+population = [random.sample(list(cities.keys()), 5) for _ in range(4)]
+
+print("Initial Population:")
+for route in population:
+    print(route, "Fitness =", fitness(route))
+
+# 3 generations
+for generation in range(3):
+
+    population.sort(key=fitness)
+
+    # Select best 2 parents
+    parents = population[:2]
+
+    # Crossover
+    p1, p2 = parents
+    child = p1[:2] + [x for x in p2 if x not in p1[:2]]
+
+    # Mutation
+    if random.random() < 0.5:
+        i, j = random.sample(range(5), 2)
+        child[i], child[j] = child[j], child[i]
+
+    population = parents + [child]
+
+    best = min(population, key=fitness)
+
+    print("\nGeneration", generation + 1)
+    print("Best Route:", best)
+    print("Best Fitness:", fitness(best))
+
+print("\nFinal Best Route:", best)
+print("Final Fitness:", fitness(best))
