@@ -1,0 +1,51 @@
+import random
+
+particles = 5
+iterations = 5
+target = 7.01       # Desired EV charging power
+
+# Initial particle positions
+position = [6.5, 7.5, 6.8, 7.2, 6.9]
+
+pbest = position.copy()
+pbest_fitness = [abs(x - target) for x in position]
+
+# Find initial Gbest
+best_index = pbest_fitness.index(min(pbest_fitness))
+gbest = pbest[best_index]
+gbest_fitness = pbest_fitness[best_index]
+
+for iteration in range(iterations):
+
+    print("\nIteration", iteration + 1)
+
+    for i in range(particles):
+
+        # Update particle position
+        position[i] += random.uniform(-0.3, 0.3)
+
+        # Keep charging power between 6 and 8 kW
+        position[i] = max(6, min(8, position[i]))
+
+        # Calculate fitness
+        fitness = abs(position[i] - target)
+
+        # Update Pbest
+        if fitness < pbest_fitness[i]:
+            pbest[i] = position[i]
+            pbest_fitness[i] = fitness
+
+        print("Particle", i + 1,
+              ": Pbest =", round(pbest[i], 2), "kW",
+              "Fitness =", round(pbest_fitness[i], 2))
+
+    # Update Gbest
+    best_index = pbest_fitness.index(min(pbest_fitness))
+
+    if pbest_fitness[best_index] < gbest_fitness:
+        gbest = pbest[best_index]
+        gbest_fitness = pbest_fitness[best_index]
+
+print("\nFinal Gbest:")
+print("Gbest =", round(gbest, 2), "kW")
+print("Fitness =", round(gbest_fitness, 2))
