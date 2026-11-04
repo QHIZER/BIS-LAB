@@ -1,0 +1,282 @@
+
+import numpy as np
+
+# ---------------------------------
+# 1. INPUT PARAMETERS
+# ---------------------------------
+
+jobs = [4, 2, 6, 3, 5, 2]  # Processing times
+num_jobs = len(jobs)
+num_machines = 3
+
+num_wolves = 10
+max_iterations = 100
+
+np.random.seed(42)
+
+
+# ---------------------------------
+# 2. CONVERT WOLF POSITION TO SCHEDULE
+# ---------------------------------
+
+def decode(position):
+    schedule = [[] for _ in range(num_machines)]
+
+    for i in range(num_jobs):
+        machine = min(int(position[i]), num_machines - 1)
+        schedule[machine].append(i)
+
+    return schedule
+
+
+# ---------------------------------
+# 3. FITNESS FUNCTION
+# ---------------------------------
+
+def fitness(position):
+    schedule = decode(position)
+
+    machine_times = []
+
+    for machine_jobs in schedule:
+        total = sum(jobs[j] for j in machine_jobs)
+        machine_times.append(total)
+
+    # Minimize maximum completion time
+    return max(machine_times)
+
+
+# ---------------------------------
+# 4. INITIALIZE WOLF POPULATION
+# ---------------------------------
+
+wolves = np.random.uniform(
+    0, num_machines, (num_wolves, num_jobs)
+)
+
+best_fitness_history = []
+
+
+# ---------------------------------
+# 5. GREY WOLF OPTIMIZATION
+# ---------------------------------
+
+for iteration in range(max_iterations):
+
+    # Evaluate fitness
+    scores = np.array([fitness(w) for w in wolves])
+
+    # Identify Alpha, Beta and Delta
+    sorted_indices = np.argsort(scores)
+
+    alpha = wolves[sorted_indices[0]].copy()
+    beta = wolves[sorted_indices[1]].copy()
+    delta = wolves[sorted_indices[2]].copy()
+
+    alpha_score = scores[sorted_indices[0]]
+
+    best_fitness_history.append(alpha_score)
+
+    # Decrease a from 2 to 0
+    a = 2 - (2 * iteration / max_iterations)
+
+    # Update each wolf
+    new_wolves = []
+
+    for wolf in wolves:
+
+        # Alpha calculation
+        r1 = np.random.rand(num_jobs)
+        r2 = np.random.rand(num_jobs)
+
+        A1 = 2 * a * r1 - a
+        C1 = 2 * r2
+
+        D_alpha = abs(C1 * alpha - wolf)
+        X1 = alpha - A1 * D_alpha
+
+        # Beta calculation
+        r1 = np.random.rand(num_jobs)
+        r2 = np.random.rand(num_jobs)
+
+        A2 = 2 * a * r1 - a
+        C2 = 2 * r2
+
+        D_beta = abs(C2 * beta - wolf)
+        X2 = beta - A2 * D_beta
+
+        # Delta calculation
+        r1 = np.random.rand(num_jobs)
+        r2 = np.random.rand(num_jobs)
+
+        A3 = 2 * a * r1 - a
+        C3 = 2 * r2
+
+        D_delta = abs(C3 * delta - wolf)
+        X3 = delta - A3 * D_delta
+
+        # Update wolf position
+        new_position = (X1 + X2 + X3) / 3
+
+        # Keep positions within valid boundaries
+        new_position = np.clip(
+            new_position, 0, num_machines - 1e-9
+        )
+
+        new_wolves.append(new_position)
+
+    wolves = np.array(new_wolves)
+
+
+# ---------------------------------
+# 6. FIND BEST SCHEDULE
+# ---------------------------------
+
+scores = np.array([fitness(w) for w in wolves])
+best_index = np.argmin(scores)
+
+best_wolf = wolves[best_index]
+best_schedule = decode(best_wolf)
+best_makespan = fitness(best_wolf)
+
+
+# ---------------------------------
+# 7. DISPLAY RESULTS
+# ---------------------------------
+
+print("\n----- GWO JOB SCHEDULING RESULTS -----")
+
+for i, machine_jobs in enumerate(best_schedule):
+
+    print(f"\nMachine {i + 1}:")
+
+    if machine_jobs:
+        for job in machine_jobs:
+            print(f"Job J{job + 1} - {jobs[job]} hours")
+    else:
+        print("No jobs assigned")
+
+    total_time = sum(jobs[j] for j in machine_jobs)
+
+    print("Total processing time:", total_time, "hours")
+
+print("\nBest Makespan:", best_makespan, "hours")
+
+
+# ---------------------------------
+# 8. DISPLAY CONVERGENCE
+# ---------------------------------
+
+import matplotlib.pyplot as plt
+
+plt.plot(best_fitness_history)
+
+plt.xlabel("Iterations")
+plt.ylabel("Makespan")
+plt.title("GWO Job Scheduling Optimization")
+
+plt.grid(True)
+plt.show()
+
+OUT PUT
+
+
+
+        C2 = 2 * r2
+
+        D_beta = abs(C2 * beta - wolf)
+        X2 = beta - A2 * D_beta
+
+        # Delta calculation
+        r1 = np.random.rand(num_jobs)
+        r2 = np.random.rand(num_jobs)
+
+        A3 = 2 * a * r1 - a
+        C3 = 2 * r2
+
+        D_delta = abs(C3 * delta - wolf)
+        X3 = delta - A3 * D_delta
+
+        # Update wolf position
+        new_position = (X1 + X2 + X3) / 3
+
+        # Keep positions within valid boundaries
+        new_position = np.clip(
+            new_position, 0, num_machines - 1e-9
+        )
+
+        new_wolves.append(new_position)
+
+    wolves = np.array(new_wolves)
+
+
+# ---------------------------------
+# 6. FIND BEST SCHEDULE
+# ---------------------------------
+
+scores = np.array([fitness(w) for w in wolves])
+best_index = np.argmin(scores)
+
+best_wolf = wolves[best_index]
+best_schedule = decode(best_wolf)
+best_makespan = fitness(best_wolf)
+
+
+# ---------------------------------
+# 7. DISPLAY RESULTS
+# ---------------------------------
+
+print("\n----- GWO JOB SCHEDULING RESULTS -----")
+
+for i, machine_jobs in enumerate(best_schedule):
+
+    print(f"\nMachine {i + 1}:")
+
+    if machine_jobs:
+        for job in machine_jobs:
+            print(f"Job J{job + 1} - {jobs[job]} hours")
+    else:
+        print("No jobs assigned")
+
+    total_time = sum(jobs[j] for j in machine_jobs)
+
+    print("Total processing time:", total_time, "hours")
+
+print("\nBest Makespan:", best_makespan, "hours")
+
+
+# ---------------------------------
+# 8. DISPLAY CONVERGENCE
+# ---------------------------------
+
+import matplotlib.pyplot as plt
+
+plt.plot(best_fitness_history)
+
+plt.xlabel("Iterations")
+plt.ylabel("Makespan")
+plt.title("GWO Job Scheduling Optimization")
+
+plt.grid(True)
+plt.show()
+
+
+----- GWO JOB SCHEDULING RESULTS -----
+
+Machine 1:
+Job J4 - 3 hours
+Job J5 - 5 hours
+Total processing time: 8 hours
+
+Machine 2:
+Job J1 - 4 hours
+Job J6 - 2 hours
+Total processing time: 6 hours
+
+Machine 3:
+Job J2 - 2 hours
+Job J3 - 6 hours
+Total processing time: 8 hours
+
+Best Makespan: 8 hours
+
